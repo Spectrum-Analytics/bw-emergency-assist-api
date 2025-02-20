@@ -19,16 +19,25 @@ export class JointEffortsService {
         this.volunteerCollection = db.collection('volunteer'); 
     }
     
-    public async createNewVolunteer(volunteer: Partial<Volunteer>): Promise<Volunteer> {
+    public async createNewVolunteer(personId: string, volunteer: Partial<Volunteer>): Promise<Volunteer> {
         const volunteerId = this.volunteerCollection.doc().id;
-        volunteer.volunteerId = volunteerId;
-        await this.volunteerCollection.doc(volunteerId).set({
+    
+        const newVolunteer : Volunteer  = {
+            volunteerId,
             ...volunteer,
             createdAt: admin.firestore.FieldValue.serverTimestamp(),
             updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        };
+
+        await this.volunteerCollection.doc(volunteerId).set(newVolunteer);
+
+        // Add to the person's incidents array
+        await this.personsCollection.doc(personId).update({
+            incidents: admin.firestore.FieldValue.arrayUnion(newVolunteer), // Append new incident
+            updatedAt: admin.firestore.FieldValue.serverTimestamp(),
         });
-        
-        return { volunteerId, ...volunteer } as Volunteer;
+
+        return newVolunteer;
     }
 
     /**

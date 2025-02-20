@@ -176,7 +176,4 @@ export class EmergencyService {
     return snapshot.docs.map(doc => ({ contactId: doc.id, ...doc.data() }));
   }
  
- 
-
-
 }

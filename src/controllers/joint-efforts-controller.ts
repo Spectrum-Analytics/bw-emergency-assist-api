@@ -2,12 +2,14 @@ import { Request, Response } from 'express';
 import { Controller } from '../types/controller';
 import { LoggerFactory } from '../factories/logger-factory';
 import { JointEffortsService } from '../services/core/joint-efforts-service';
+import { PersonService } from '../services/core/person-service';
+import { Person } from '../models/base/person';
 
 /**
  * EmergencyAssistController handles requests related to emergency incidents and contacts.
  */
 class JointEffortsController extends Controller {
-  constructor(protected service: JointEffortsService, loggerFactory: LoggerFactory) {
+  constructor(protected jointEffortsService: JointEffortsService, protected personService: PersonService,  loggerFactory: LoggerFactory) {
     super(loggerFactory.getNamedLogger('joint-efforts-controller'));
   }
 
@@ -39,8 +41,15 @@ class JointEffortsController extends Controller {
       return handleError({ code: 400, message: 'Volunteer data is required.' });
     }
 
-    return this.service
-      .createNewVolunteer(volunteerData)
+    //First check if person exists, then f not create person first, else get person
+    let person = await this.personService.getPersonByPhone(volunteerData.phone);
+    
+    if(!person){
+      person = await this.personService.createPerson(volunteerData);
+    }
+
+    return this.jointEffortsService
+      .createNewVolunteer(person.id,  volunteerData)
       .then((volunteer:any) => sendResponse({ message: 'Volunteer created successfully', volunteer }))
       .catch(handleError);
   }

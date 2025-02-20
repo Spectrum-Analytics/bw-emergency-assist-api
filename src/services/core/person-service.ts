@@ -9,7 +9,7 @@ import { Person } from '../../models/base/person';
 // For example, if using Firebase Web SDK types, you might import GeoPoint like this:
 // import { GeoPoint } from 'firebase/firestore';
 
-export class EmergencyService {
+export class PersonService {
     private contactsRef: admin.database.Reference;
 
   private personsCollection: admin.firestore.CollectionReference;
