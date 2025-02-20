@@ -31,3 +31,9 @@ export enum DocumentType {
   Passport = 'Passport'
 }
 
+export enum VolunteerStatus {
+  RESPONDING = 'Responding',
+  EN_ROUTE = 'En Route',
+  IDLE = 'Idle', 
+  UNAVAILABLE = 'Unavailable'
+}
